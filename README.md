@@ -4,20 +4,20 @@
 
 app
 
-> \_\_init\_\_.py
-> app.py
+> \_\_init\_\_.py  
+> app.py  
 > config.py _(For MongoDB connection)_
 
 static
 
-> images
+> images  
 > graphs
 
-requirements.txt
+requirements.txt  
 README.md
 
-_(For Heroku hosting)_
-wsgi.py
+_(For Heroku hosting)_  
+wsgi.py  
 Procfile
 
 ## How to run :
