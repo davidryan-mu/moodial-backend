@@ -2,12 +2,11 @@ import matplotlib.pyplot as plt
 from flask import Flask, request, jsonify, make_response
 from flask_pymongo import PyMongo
 from flask_restplus import Resource, Api, fields
-from datetime import timedelta, date, datetime
+from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity
 )
-import os
 
 app= Flask(__name__)
 authorizations = {
@@ -30,11 +29,6 @@ api = Api(app,
 
 mongo = PyMongo(app)
 jwt = JWTManager(app)
-
-UPLOAD_FOLDER = 'static/images/graphs'
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
 
 user_collection = mongo.db.user
 
@@ -310,65 +304,6 @@ class Protected(Resource):  # allows testing of authentication checks
         current_user = get_jwt_identity()
         return {"You are accessing this as": current_user}, 200
 
-
-class GraphWeekly(Resource):
-
-    @classmethod
-    def remove_0_from_list(cls, list_to_check, val):
-        return [value for value in list_to_check if value != val]
-
-    @jwt_required()
-    @api.doc(description='Saves a graph as .png which can then be viewed.')
-    def get(self):
-        identity = get_jwt_identity()
-        today = date.today()
-        days = []
-        for i in range(0, 8):
-            days.append(str(today - timedelta(days=i)))
-        # Retrieves last 7 days of entries from DB including today.
-        my_results = list(mongo.db.entries.find(
-            {"_postedBy": identity, "date": {"$in": [days[0], days[1], days[2], days[3],
-                                                    days[4], days[5], days[6], days[7]]}}
-        ))
-        recorded_mood = []
-        for i in range(0, len(my_results)):
-            recorded_mood.append(int(my_results[i]['mood']))
-        mood_map = {
-            1: "Happy",
-            2: "Sad",
-            3: "Surprised",
-            4: "Disgusted",
-            5: "Angry",
-            6: "Fearful",
-            7: "Bad"
-        }
-        labels = []
-        for record in recorded_mood:
-            labels.append(mood_map[record])
-
-        labels = list(set(labels))
-
-        happy = recorded_mood.count(1)
-        sad = recorded_mood.count(2)
-        surprised = recorded_mood.count(3)
-        disgusted = recorded_mood.count(4)
-        angry = recorded_mood.count(5)
-        fearful = recorded_mood.count(6)
-        bad = recorded_mood.count(7)
-
-        sizes = [happy, sad, surprised, disgusted, angry, fearful, bad]
-        sizes = GraphWeekly.remove_0_from_list(sizes, 0)  # 0s removed from the list
-
-        colors = ['greenyellow', 'mediumblue', 'yellow', 'magenta', 'red', 'darkorange', 'cadetblue']
-
-
-        plt.pie(sizes, labels=labels, colors=colors)
-        plt.axis('equal')
-        plt.savefig('static/images/graphs/graph.png')
-
-        return {'message':'Graph generated and saved to /static/images/graphs'}
-
-api.add_resource(GraphWeekly, '/weeklygraph')
 api.add_resource(Protected, '/protected')
 api.add_resource(Entry, '/entry')
 api.add_resource(EntryPut, '/entry/<int:id>', endpoint='id')
