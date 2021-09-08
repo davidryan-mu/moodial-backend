@@ -1,5 +1,7 @@
 # Moodial Back-end
 
+Backend for mood-tracking app. Flask application connecting to an instance of MongoDB. Created by Sean Lawless with some minor updates by myself. Re-hosting in repo for purpose of continuation of completed work by a future student.
+
 ## File Structure
 
 app
@@ -20,7 +22,7 @@ _(For Heroku hosting)_
 wsgi.py  
 Procfile
 
-## How to run :
+## Install and Run:
 
 1. Install all requirements located in requirements.txt
    `pip install -r requirements.txt`
@@ -28,7 +30,7 @@ Procfile
 2. run app.py, this should launch a webserver at localhost:5000
    `py app/app.py`
 
-3. Use broswer of choice to visit localhost:5000
+3. Use browser of choice to visit localhost:5000
 
 4. Swagger UI will show all available endpoints
 
