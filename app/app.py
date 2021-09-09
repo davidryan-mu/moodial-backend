@@ -8,7 +8,7 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token, get_jwt_identity
 )
 
-app= Flask(__name__)
+app = Flask(__name__)
 authorizations = {
     'apikey': {
         'type': 'apiKey',
@@ -70,7 +70,7 @@ class Entry(Resource):
         )
         return sequenceDocument['sequence_value']
 
-    @jwt_required()
+    @jwt_required
     @api.doc(security=authorizations,
             body=entry_post,
             responses= {
@@ -101,7 +101,7 @@ class Entry(Resource):
         except:
             return {"message": "Failed to insert entry to database"}, 500
 
-    @jwt_required()
+    @jwt_required
     @api.doc(security=authorizations,
             responses = {
                             200: 'OK'
@@ -115,7 +115,7 @@ class Entry(Resource):
             response.append(entry)
         return response, 200
 
-    @jwt_required()
+    @jwt_required
     @api.doc(security=authorizations, description='Will delete the last posted entry from the database')
     def delete(self):  # deletes the last posted entry
         try:
@@ -132,7 +132,7 @@ class Entry(Resource):
 
 
 class EntryPut(Resource):
-    @jwt_required()
+    @jwt_required
     @api.doc(description='Updates the entry with specified ID, ID = endpoint',
             params={'id': 'Entry id to update'},
             security=authorizations,
@@ -169,7 +169,7 @@ class EntryPut(Resource):
             return {'message': 'Failed to update entry'}, 500
 
 class EntryList(Resource):
-    @jwt_required()
+    @jwt_required
     @api.doc(security=authorizations,
             responses={
                 500: 'Entries not found',
@@ -281,7 +281,7 @@ class DeleteUser(Resource):
                 404: 'User does not exist'
             },
             description='Deletes all users data from database')
-    @jwt_required()
+    @jwt_required
     def delete(self, username):
         if Register.find_by_username(username):
             if get_jwt_identity() == username:
@@ -298,7 +298,7 @@ class DeleteUser(Resource):
 
 class Protected(Resource):  # allows testing of authentication checks
 
-    @jwt_required()
+    @jwt_required
     @api.doc(security=authorizations)
     def get(self):
         current_user = get_jwt_identity()
@@ -315,3 +315,6 @@ api.add_resource(DeleteUser, '/deleteuser/<string:username>', endpoint='username
 @app.route('/', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def index():
     return 'OK'
+
+if __name__ == '__main__':
+    app.run(debug=True)

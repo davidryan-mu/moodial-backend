@@ -45,3 +45,14 @@ Procfile
 
 8. Follow the details on the pop up window to include JWT. Must be prefixed with 'Bearer' e.g)
    `Bearer <JWT>`
+
+## Configure database
+
+By default the app is configured to point to a shared MongoDB instance for testing purposes. This is not to be used in a production environment.
+
+If you wish to use your own database, use [Atlas](https://docs.atlas.mongodb.com/getting-started/) to deploy a cluster and update your local app/config.py with the given connection string as shown [here](https://stackoverflow.com/a/66270640).
+
+```
+MONGO_DBNAME = "<db_name>"
+MONGO_URI = "mongodb+srv://<username>:<password>@<cluster_name>.mongodb.net/<db_name>?retryWrites=true&w=majority"
+```
