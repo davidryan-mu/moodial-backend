@@ -48,11 +48,34 @@ Procfile
 
 ## Configure database
 
-By default the app is configured to point to a shared MongoDB instance for testing purposes. This is not to be used in a production environment.
+The examples below and the available Heroku deployment available [here](https://moodial-server.herokuapp.com/) use a shared MongoDB instance that is not to be used in production and is only for testing purposes. Feel free to use this database or create your own.
 
-If you wish to use your own database, use [Atlas](https://docs.atlas.mongodb.com/getting-started/) to deploy a cluster and update your local app/config.py with the given connection string as shown [here](https://stackoverflow.com/a/66270640).
+If you wish to use your own database, use [Atlas](https://docs.atlas.mongodb.com/getting-started/) to deploy a cluster and use the relevant [connection string](https://stackoverflow.com/a/66270640) and database name in the methods below.
+
+### Local
+
+To use the available MongoDB instance, run the following in the /api directory:
+`py app/app.py --secret_key secretkey --jwt_secret_key jwtsecretkey --db_name moodialdb --mongo_uri mongodb+srv://user1:3dKskn44HalWYWPH@moodial-test.qhgwo.mongodb.net/moodialdb?retryWrites=true"&"w=majority`
+
+To use your own MongoDB database, run the following in the /api directory and replace the variables or use strings provided by Atlas UI:
+`py app/app.py --secret_key secretkey --jwt_secret_key jwtsecretkey -db <db_name> -uri mongodb+srv://<username>:<clustername>@<cluster>.mongodb.net/<db_name>?retryWrites=true"&"w=majority`
+
+> Note: You may need to escape the ampersand ('&') in the connection string in your terminal by using `"&"`
+
+### Heroku Deployment
+
+The existing [Heroku deployment](https://moodial-server.herokuapp.com/) uses environment variables pointing at the aforementioned MongoDB instance.
+
+You can deploy your own version of the server onto Heroku using this [guide](https://devcenter.heroku.com/articles/git).
+
+When you have your server running on Heroku, you can set the needed environment variables using the Heroku cli:
 
 ```
-MONGO_DBNAME = "<db_name>"
-MONGO_URI = "mongodb+srv://<username>:<password>@<cluster_name>.mongodb.net/<db_name>?retryWrites=true&w=majority"
+heroku config:set IS_HEROKU=True
+heroku config:set SECRET_KEY=secretkey
+heroku config:set JWT_SECRET_KEY=jwtsecretkey
+heroku config:set DBNAME=<db_name>
+heroku config:set MONGO_URI=<connection_string>
 ```
+
+> Note: You may need to escape the ampersand ('&') in the connection string in your terminal by using `^^^&`
